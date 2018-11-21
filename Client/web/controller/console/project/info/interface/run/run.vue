@@ -434,6 +434,7 @@
             }
         },
         created:function () {
+            console.error(this.interfaceEdit);
             store.dispatch("initData",$.clone(this.interfaceEdit));
             store.commit("setIndex",this.index);
             if(session.get("exampleId"))

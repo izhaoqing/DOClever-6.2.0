@@ -4,31 +4,31 @@
             <div slot="title">{{paramTab}}</div>
             <restparam :index="index" :item="item"></restparam>
         </expand>
-        <!-- <expand ref="query" :expand="queryAutoExpand">
+        <expand v-if="interfaceEdit.callType === 'common'" ref="query" :expand="queryAutoExpand">
             <div slot="title">{{queryTab}}</div>
             <inparamquery :index="index" :item="item"></inparamquery>
             <el-button size="mini" type="primary" style="margin-top: 5px;margin-left: 10px" @click="importQuery">导入Query字符串</el-button>
         </expand>
-        <expand ref="header">
+        <expand v-if="interfaceEdit.callType === 'common'"  ref="header">
             <div slot="title">{{headerTab}}</div>
             <inparamheader :index="index" :item="item"></inparamheader>
             <el-button size="mini" type="primary" style="margin-top: 5px;margin-left: 10px" @click="importHeader">导入HTTP Header字符串</el-button>
-        </expand> -->
-        <expand v-if="interfaceEdit.method=='POST' || interfaceEdit.method=='PUT' || interfaceEdit.method=='PATCH'" ref="body" :expand="bodyAutoExpand">
+        </expand>
+        <expand v-if="interfaceEdit.method=='POST' || interfaceEdit.method=='PUT' || interfaceEdit.method=='PATCH' || interfaceEdit.callType === 'eosgi'" ref="body" :expand="bodyAutoExpand">
             <div slot="title">{{bodyTab}}</div>
-            <inparambody :index="index" :item="item"></inparambody>
+            <inparambody :index="index" :item="item" :callType="interfaceEdit.callType"></inparambody>
             <el-button size="mini" type="primary" style="margin-top: 5px;margin-left: 10px" @click="importBody" v-if="bodyInfo.type==0">导入Body字符串</el-button>
         </expand>
-        <expand ref="inject">
+        <expand v-if="interfaceEdit.callType === 'common'" ref="inject">
             <div slot="title">Inject</div>
             <inparaminject :index="index" :item="item"></inparaminject>
         </expand>
         <expand ref="result" :expand="1">
-            <div slot="title">Result</div>
+            <div slot="title">{{interfaceEdit.callType === 'common' ? 'Result' : '输出' }}</div>
             <el-row class="row" style="background-color: white;margin-top: 15px;">
                 <el-row class="row" style="padding:0 0 0 20px;height: 30px;line-height: 30px;margin-bottom: 20px">
                     <el-radio class="radio" :label="0" v-model="outInfo.type"  id="outJson">JSON</el-radio>&nbsp;&nbsp;&nbsp;&nbsp;
-                    <el-radio class="radio" :label="1" v-model="outInfo.type" id="outRaw">Raw</el-radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <el-radio v-if="interfaceEdit.callType === 'common'" class="radio" :label="1" v-model="outInfo.type" id="outRaw">Raw</el-radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <el-select v-model="outInfo.jsonType" v-if="outInfo.type==0" @input="changeJSONType">
                         <el-option :value="0" label="Object"></el-option>
                         <el-option :value="1" label="Array"></el-option>
@@ -170,6 +170,7 @@
                 return "Header ("+this.headerSave.length+")";
             },
             bodyTab:function () {
+                if (this.interfaceEdit.callType === 'eosgi') return '输入';
                 return "Body ("+(this.item.bodyInfo.type==0?this.bodySave.length:"Raw")+")";
             },
         },

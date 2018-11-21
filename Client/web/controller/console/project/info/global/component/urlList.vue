@@ -7,8 +7,9 @@
                         <el-input size="small" style="width: 94%;margin: 0 auto" placeholder="请填写BaseUrl地址" v-model="item.url"></el-input>
                     </td>
                     <td style="width: 20%">
-                        <el-select style="width: 90%;text-align: center" v-model="item.type" size="small">
+                        <el-select style="width: 90%;text-align: center" v-model="item.callType" size="small">
                             <el-option  :value="0" label="eosgi"></el-option>
+                            <el-option  :value="1" label="常规"></el-option>
                         </el-select>
                     </td>
                     <td style="width: 20%">

@@ -1053,6 +1053,8 @@ module.exports={
     },
     actions:{
         add:function (context,data) {
+            console.log(data);
+
             if(context.state.interface && (data.id || (data.item && !data.item._id)))
             {
                 context.state.interface.select=0;
@@ -1066,6 +1068,7 @@ module.exports={
             else
             {
                 context.commit("setInterfaceEdit",{
+                    callType: data.callType,
                     "name": "",
                     "group": {
                         "_id": data.id,
@@ -1416,6 +1419,7 @@ module.exports={
                 method:context.state.interfaceEdit.method,
                 finish:context.state.interfaceEdit.finish,
                 service:context.state.interfaceEdit.service,
+                callType:context.state.interfaceEdit.callType,
                 param:[]
             }
             if(context.state.interfaceEdit._id)

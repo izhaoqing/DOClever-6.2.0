@@ -53,6 +53,10 @@ var interface=[
             service:{
                 type:String,
                 optional:1
+            },
+            callType:{
+                type:String,
+                optional:1
             }
         },
         "data":String,

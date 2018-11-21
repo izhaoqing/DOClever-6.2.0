@@ -74,7 +74,7 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <!-- <el-row class="row">
+                    <el-row v-if="interfaceEdit.callType === 'common'" class="row">
                         <el-form-item label="路径">
                             <el-select style="width: 20%;text-align: center" v-model="interfaceEdit.method" @input="changeMethod" size="small">
                                 <el-option  value="GET"></el-option>
@@ -85,8 +85,8 @@
                             </el-select>
                             <el-input size="small" style="width: calc(75% - 14px);margin-left: 10px" placeholder="请输入接口路径(不包含BaseUrl)" v-model.trim="interfaceEdit.url" @input="changeUrl" @paste.native="paste"></el-input>
                         </el-form-item>
-                    </el-row> -->
-                    <el-row class="row">
+                    </el-row>
+                    <el-row v-else class="row">
                         <el-form-item label="服务名">
                             <el-input style="width: 95%;" size="small" v-model="interfaceEdit.service" placeholder="请输入服务名"></el-input>
                         </el-form-item>
@@ -134,22 +134,22 @@
             <el-tabs type="border-card" editable @edit="editTab" style="background-color: white;padding: 0px;margin-top: 15px;border-radius: 5px;" id="mainParam" v-model="tabIndex">
                 <template v-for="(item, index) in param">
                     <el-tab-pane :key="item.id" :name="index">
-                    <span slot="label">
-                        <el-tooltip class="item" effect="dark" placement="bottom" width="200" :content="item.remark" v-if="item.remark">
-                            <span>{{item.name}}</span>
-                        </el-tooltip>
-                        <span v-else>{{item.name}}</span>&nbsp
-                        <el-dropdown>
-                            <span class="el-dropdown-link">
-                                <i class="el-icon-caret-bottom" style="color:rgb(80, 191, 255) ;"></i>
-                            </span>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item @click.native="editParam(item)">编辑</el-dropdown-item>
-                                <el-dropdown-item @click.native="cloneParam(item)">克隆</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
-                    </span>
-                        <interfaceparam :index="index" :item="item"></interfaceparam>
+                        <span slot="label">
+                            <el-tooltip class="item" effect="dark" placement="bottom" width="200" :content="item.remark" v-if="item.remark">
+                                <span>{{item.name}}</span>
+                            </el-tooltip>
+                            <span v-else>{{item.name}}</span>&nbsp
+                            <el-dropdown>
+                                <span class="el-dropdown-link">
+                                    <i class="el-icon-caret-bottom" style="color:rgb(80, 191, 255) ;"></i>
+                                </span>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item @click.native="editParam(item)">编辑</el-dropdown-item>
+                                    <el-dropdown-item @click.native="cloneParam(item)">克隆</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </span>
+                        <interfaceparam :index="index" :item="item" :callType="interfaceEdit.callType"></interfaceparam>
                     </el-tab-pane>
                 </template>
             </el-tabs>
@@ -399,6 +399,9 @@
                         },5000);
                     }
                 }
+            },
+            "$store.state.interfaceEdit":function (val) {
+                this.interfaceEdit = val
             }
         },
         methods: {
@@ -411,12 +414,12 @@
                     $.tip("请填入接口名称",0);
                     return;
                 }
-                // else if(!this.interfaceEdit.url)
-                // {
-                //     $.tip("请填入接口地址",0);
-                //     return;
-                // }
-                else if(!this.interfaceEdit.service)
+                else if(!this.interfaceEdit.url && this.interfaceEdit.callType === 'common')
+                {
+                    $.tip("请填入接口地址",0);
+                    return;
+                }
+                else if(!this.interfaceEdit.service && this.interfaceEdit.callType === 'eosgi')
                 {
                     $.tip("请填入服务名",0);
                     return;
@@ -864,6 +867,7 @@
             }
         },
         mounted:function () {
+            console.log(this.interfaceEdit);
             this.exampleList();
         }
     }

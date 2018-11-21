@@ -15,18 +15,20 @@
                 {{interfaceEdit.name}}
             </el-row>
             <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
-            <!-- <el-row class="row" style="padding-left: 10px;padding-top: 20px">
-                Method:
-            </el-row>
-            <el-row class="row" style="padding-left: 20px;padding-top: 10px;color: #17b9e6">
-                {{interfaceEdit.method}}
-            </el-row>
-            <el-row class="row" style="padding-left: 10px;padding-top: 20px">
-                Path:
-            </el-row>
-            <el-row class="row" style="padding-left: 20px;padding-top: 10px;color: #17b9e6">
-                {{interfaceEdit.url}}
-            </el-row> -->
+            <template v-if="interfaceEdit.callType === 'common'">
+                <el-row class="row" style="padding-left: 10px;padding-top: 20px">
+                    Method:
+                </el-row>
+                <el-row class="row" style="padding-left: 20px;padding-top: 10px;color: #17b9e6">
+                    {{interfaceEdit.method}}
+                </el-row>
+                <el-row class="row" style="padding-left: 10px;padding-top: 20px">
+                    Path:
+                </el-row>
+                <el-row class="row" style="padding-left: 20px;padding-top: 10px;color: #17b9e6">
+                    {{interfaceEdit.url}}
+                </el-row>
+            </template>
             <el-row class="row" style="padding-left: 10px;padding-top: 20px">
                 状态:
             </el-row>
@@ -75,7 +77,7 @@
                                 </table>
                             </el-row>
                         </expand>
-                        <!-- <expand v-if="querySave.length>0" ref="query">
+                        <expand v-if="querySave.length>0 && interfaceEdit.callType === 'common'" ref="query">
                             <div slot="title">Query:</div>
                             <el-row class="row" style="padding:0 30px;">
                                 <table style="width: 100%;border-collapse: collapse" class="table-hover">
@@ -108,7 +110,7 @@
                                 </table>
                             </el-row>
                         </expand>
-                        <expand v-if="headerSave.length>0" ref="header">
+                        <expand v-if="headerSave.length>0  && interfaceEdit.callType === 'common'" ref="header">
                             <div slot="title">Http Header:</div>
                             <el-row class="row" style="padding:0 30px;">
                                 <table style="width: 100%;border-collapse: collapse" class="table-hover">
@@ -140,9 +142,9 @@
                                     </tbody>
                                 </table>
                             </el-row>
-                        </expand> -->
-                        <expand v-if="(interfaceEdit.method=='PUT' || interfaceEdit.method=='POST' || interfaceEdit.method=='PATCH') && (bodySave.length>0 || bodyInfo.type==1)" ref="body">
-                            <div slot="title">Body:</div>
+                        </expand>
+                        <expand v-if="(interfaceEdit.method=='PUT' || interfaceEdit.method=='POST' || interfaceEdit.method=='PATCH' || interfaceEdit.callType === 'eosgi') && (bodySave.length>0 || bodyInfo.type==1)" ref="body">
+                            <div slot="title">{{interfaceEdit.callType === 'common' ? 'Body' : '输入'}}: </div>
                             <el-row class="row" style="padding:0 30px;">
                                 <table style="width: 100%;border-collapse: collapse" v-if="bodyInfo.type==0" class="table-hover">
                                     <thead style="color:gray;text-align: center;vertical-align: middle">
@@ -226,7 +228,7 @@
                             </el-row>
                         </expand>
                         <expand v-if="(outInfo.type==0 && drawMix.length>0) || outInfo.type==1" ref="result">
-                            <div slot="title">Result:</div>
+                            <div slot="title">{{interfaceEdit.callType === 'common' ? 'Result' : '输出'}}: </div>
                             <el-row class="row" style="padding: 0 30px;">
                                 <el-row class="row" v-if="outInfo.type==0 && drawMix.length>0">
                                     <el-radio-group size="small" v-model="outJSONType">

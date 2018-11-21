@@ -44,7 +44,7 @@
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item><div @click="addInterface(item)">新接口</div></el-dropdown-item>
                                 <el-dropdown-item><div @click="addInterfaceFromTemplate(item)">从模板创建</div></el-dropdown-item>
-                                <el-dropdown-item><div>我的接口</div></el-dropdown-item>
+                                <el-dropdown-item><div @click="addMyInterface(item)">我的接口</div></el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </template>
@@ -294,17 +294,20 @@
                         }
                     })
                 })
-
             },
-            addInterface:function (item) {
+            addInterface:function (item, callType) {
                 session.remove("snapshotId");
                 session.remove("snapshotDis");
                 session.remove("snapshotCreator");
                 session.remove("snapshotDate");
                 this.$store.dispatch("add",{
                     item:null,
-                    id:item._id
+                    id:item._id,
+                    callType: callType || 'common'
                 })
+            },
+            addMyInterface:function (item) {
+                this.addInterface(item, 'eosgi');
             },
             dragStart:function (event,item,index) {
                 event.dataTransfer.effectAllowed = "move";
