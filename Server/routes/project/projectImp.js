@@ -142,6 +142,10 @@ var interface=[
             urls:{
                 type:String,
                 optional:1
+            },
+            type:{
+                type:String,
+                optional:1
             }
         },
         "data":{

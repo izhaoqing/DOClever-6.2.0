@@ -15,7 +15,7 @@
                 {{interfaceEdit.name}}
             </el-row>
             <el-row class="row" style="height: 1px;background-color: lightgray"></el-row>
-            <el-row class="row" style="padding-left: 10px;padding-top: 20px">
+            <!-- <el-row class="row" style="padding-left: 10px;padding-top: 20px">
                 Method:
             </el-row>
             <el-row class="row" style="padding-left: 20px;padding-top: 10px;color: #17b9e6">
@@ -26,7 +26,7 @@
             </el-row>
             <el-row class="row" style="padding-left: 20px;padding-top: 10px;color: #17b9e6">
                 {{interfaceEdit.url}}
-            </el-row>
+            </el-row> -->
             <el-row class="row" style="padding-left: 10px;padding-top: 20px">
                 状态:
             </el-row>
@@ -75,7 +75,7 @@
                                 </table>
                             </el-row>
                         </expand>
-                        <expand v-if="querySave.length>0" ref="query">
+                        <!-- <expand v-if="querySave.length>0" ref="query">
                             <div slot="title">Query:</div>
                             <el-row class="row" style="padding:0 30px;">
                                 <table style="width: 100%;border-collapse: collapse" class="table-hover">
@@ -140,7 +140,7 @@
                                     </tbody>
                                 </table>
                             </el-row>
-                        </expand>
+                        </expand> -->
                         <expand v-if="(interfaceEdit.method=='PUT' || interfaceEdit.method=='POST' || interfaceEdit.method=='PATCH') && (bodySave.length>0 || bodyInfo.type==1)" ref="body">
                             <div slot="title">Body:</div>
                             <el-row class="row" style="padding:0 30px;">

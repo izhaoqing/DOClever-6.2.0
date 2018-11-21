@@ -3,10 +3,15 @@
         <table width="100%">
             <template v-for="(item,index) in arr">
                 <tr style="vertical-align: middle;height: 40px">
-                    <td style="width: 50%">
-                        <el-input size="small" style="width: 90%;margin: 0 auto" placeholder="请填写BaseUrl地址" v-model="item.url"></el-input>
+                    <td style="width: 40%">
+                        <el-input size="small" style="width: 94%;margin: 0 auto" placeholder="请填写BaseUrl地址" v-model="item.url"></el-input>
                     </td>
-                    <td style="width: 30%">
+                    <td style="width: 20%">
+                        <el-select style="width: 90%;text-align: center" v-model="item.type" size="small">
+                            <el-option  :value="0" label="eosgi"></el-option>
+                        </el-select>
+                    </td>
+                    <td style="width: 20%">
                         <el-input size="small" style="width: 90%;margin: 0 auto" placeholder="请填写环境变量备注" v-model="item.remark"></el-input>
                     </td>
                     <td style="width: 10%">

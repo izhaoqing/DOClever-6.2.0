@@ -44,6 +44,7 @@
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item><div @click="addInterface(item)">新接口</div></el-dropdown-item>
                                 <el-dropdown-item><div @click="addInterfaceFromTemplate(item)">从模板创建</div></el-dropdown-item>
+                                <el-dropdown-item><div>我的接口</div></el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </template>

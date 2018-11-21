@@ -68,12 +68,13 @@
                                 <el-select style="width: 90%;text-align: center" v-model="interfaceEdit.finish" size="small">
                                     <el-option  :value="0" label="开发中"></el-option>
                                     <el-option  :value="1" label="开发完成"></el-option>
+                                    <el-option  :value="3" label="设计中"></el-option>
                                     <el-option  :value="2" label="已废弃"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row class="row">
+                    <!-- <el-row class="row">
                         <el-form-item label="路径">
                             <el-select style="width: 20%;text-align: center" v-model="interfaceEdit.method" @input="changeMethod" size="small">
                                 <el-option  value="GET"></el-option>
@@ -83,6 +84,11 @@
                                 <el-option  value="PATCH"></el-option>
                             </el-select>
                             <el-input size="small" style="width: calc(75% - 14px);margin-left: 10px" placeholder="请输入接口路径(不包含BaseUrl)" v-model.trim="interfaceEdit.url" @input="changeUrl" @paste.native="paste"></el-input>
+                        </el-form-item>
+                    </el-row> -->
+                    <el-row class="row">
+                        <el-form-item label="服务名">
+                            <el-input style="width: 95%;" size="small" v-model="interfaceEdit.service" placeholder="请输入服务名"></el-input>
                         </el-form-item>
                     </el-row>
                     <el-row class="row" v-if="interfaceEdit.id">
@@ -405,13 +411,20 @@
                     $.tip("请填入接口名称",0);
                     return;
                 }
-                else if(!this.interfaceEdit.url)
+                // else if(!this.interfaceEdit.url)
+                // {
+                //     $.tip("请填入接口地址",0);
+                //     return;
+                // }
+                else if(!this.interfaceEdit.service)
                 {
-                    $.tip("请填入接口地址",0);
+                    $.tip("请填入服务名",0);
                     return;
                 }
                 this.savePending=true;
                 var _this=this;
+                console.log(this.interfaceEdit);
+                // return false;
                 this.$store.dispatch("save").then(function (data) {
                     _this.savePending=false;
                     if(data.code==200)
@@ -506,9 +519,14 @@
                     $.tip("请填入接口名称",0);
                     return;
                 }
-                else if(!this.interfaceEdit.url)
+                // else if(!this.interfaceEdit.url)
+                // {
+                //     $.tip("请填入接口地址",0);
+                //     return;
+                // }
+                else if(!this.interfaceEdit.service)
                 {
-                    $.tip("请填入接口地址",0);
+                    $.tip("请填入服务名",0);
                     return;
                 }
                 var _this=this;

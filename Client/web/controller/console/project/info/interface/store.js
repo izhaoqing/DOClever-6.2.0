@@ -1415,6 +1415,7 @@ module.exports={
                 project:session.get("projectId"),
                 method:context.state.interfaceEdit.method,
                 finish:context.state.interfaceEdit.finish,
+                service:context.state.interfaceEdit.service,
                 param:[]
             }
             if(context.state.interfaceEdit._id)

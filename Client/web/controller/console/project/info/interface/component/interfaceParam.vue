@@ -4,7 +4,7 @@
             <div slot="title">{{paramTab}}</div>
             <restparam :index="index" :item="item"></restparam>
         </expand>
-        <expand ref="query" :expand="queryAutoExpand">
+        <!-- <expand ref="query" :expand="queryAutoExpand">
             <div slot="title">{{queryTab}}</div>
             <inparamquery :index="index" :item="item"></inparamquery>
             <el-button size="mini" type="primary" style="margin-top: 5px;margin-left: 10px" @click="importQuery">导入Query字符串</el-button>
@@ -13,7 +13,7 @@
             <div slot="title">{{headerTab}}</div>
             <inparamheader :index="index" :item="item"></inparamheader>
             <el-button size="mini" type="primary" style="margin-top: 5px;margin-left: 10px" @click="importHeader">导入HTTP Header字符串</el-button>
-        </expand>
+        </expand> -->
         <expand v-if="interfaceEdit.method=='POST' || interfaceEdit.method=='PUT' || interfaceEdit.method=='PATCH'" ref="body" :expand="bodyAutoExpand">
             <div slot="title">{{bodyTab}}</div>
             <inparambody :index="index" :item="item"></inparambody>

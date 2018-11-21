@@ -49,6 +49,10 @@ var interface=[
             autosave:{
                 type:String,
                 optional:1
+            },
+            service:{
+                type:String,
+                optional:1
             }
         },
         "data":String,
