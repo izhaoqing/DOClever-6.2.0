@@ -5,25 +5,25 @@
                 <div slot="title">{{paramTab}}</div>
                 <runrestparam :index="index" :item="item"></runrestparam>
             </expand>
-            <expand ref="query" :expand="queryAutoExpand">
+            <expand v-if="callType === 'common'" ref="query" :expand="queryAutoExpand">
                 <div slot="title">{{queryTab}}</div>
                 <runquery v-show="!queryRawShow" :index="index" :item="item"></runquery>
                 <el-input size="small" type="textarea" :rows="3" style="height: 100px;margin-top: 10px" placeholder="在这里编辑原始的url参数字符串，以&符合分割" v-show="queryRawShow" v-model="queryRawStr"></el-input>
                 <el-button type="primary" size="mini" style="margin-top: 5px;margin-left: 10px" @click="toggleQuery">{{queryRawShow?'Commit Raw':'Edit Raw'}}</el-button>
             </expand>
-            <expand ref="header">
+            <expand v-if="callType === 'common'" ref="header">
                 <div slot="title">{{headerTab}}</div>
                 <runheader  v-show="!headerRawShow" :index="index" :item="item"></runheader>
                 <el-input size="small" type="textarea" :rows="3" style="height: 100px;margin-top: 10px" placeholder="在这里编辑原始的header字符串，以回车分割" v-show="headerRawShow" v-model="headerRawStr"></el-input>
                 <el-button type="primary" size="mini" style="margin-top: 5px;margin-left: 10px" @click="toggleHeader">{{headerRawShow?'Commit Raw':'Edit Raw'}}</el-button>
             </expand>
-            <expand v-if="interface.method=='POST' || interface.method=='PUT' || interface.method=='PATCH'" ref="body" :expand="bodyAutoExpand">
+            <expand v-if="interface.method=='POST' || interface.method=='PUT' || interface.method=='PATCH' || callType === 'eosgi'" ref="body" :expand="bodyAutoExpand">
                 <div slot="title">{{bodyTab}}</div>
                 <runbody v-show="!bodyRawShow" :index="index" :item="item"></runbody>
                 <el-input size="small" type="textarea" :rows="3" style="height: 100px;margin-top: 10px" placeholder="在这里编辑原始的url参数字符串，以&符合分割，文件类型用[FILE]代替" v-show="bodyRawShow" v-model="bodyRawStr"></el-input>
                 <el-button type="primary" size="mini" style="margin-top: 5px;margin-left: 10px" @click="toggleBody" v-if="bodyInfo.type==0">{{bodyRawShow?'Commit Raw':'Edit Raw'}}</el-button>
             </expand>
-            <expand ref="inject">
+            <expand v-if="callType === 'common'" ref="inject">
                 <div slot="title">Inject</div>
                 <runinject :index="index" :item="item"></runinject>
             </expand>
@@ -39,7 +39,7 @@
             <template v-if="resultType==1">
                 <el-row class="row" style="padding: 10px 10px 10px 20px;margin-bottom: 10px" key="real">
                     <span>
-                        Result:&nbsp;&nbsp;<span :style="{color:statusStr.match(/^2/)?'green':'red'}">{{statusStr=='0'?'ERROR':statusStr}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #50a3ff">{{second?("耗时"+second+"秒"):""}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span v-if="errorCount>0" style="color: red">Error:&nbsp;{{errorCount}}</span>
+                        {{callType === 'common' ? 'Result' : '输出' }}:&nbsp;&nbsp;<span :style="{color:statusStr.match(/^2/)?'green':'red'}">{{statusStr=='0'?'ERROR':statusStr}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #50a3ff">{{second?("耗时"+second+"秒"):""}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span v-if="errorCount>0" style="color: red">Error:&nbsp;{{errorCount}}</span>
                     </span>
                     <el-popover ref="error" placement="bottom" width="400" trigger="hover" v-if="errorCount>0" content="切换到Advance Tab页，移动到红色的行上面即可看到错误信息">
                     </el-popover>
@@ -194,7 +194,7 @@
     var runInject=require("./runInject.vue")
     var expand=require("component/expand.vue");
     module.exports={
-        props:["item","index"],
+        props:["item","index", "callType"],
         data:function () {
             return {
                 queryAutoExpand:0,
@@ -255,6 +255,7 @@
                 return "Header ("+this.headerSave.length+")";
             },
             bodyTab:function () {
+                if (this.callType === 'eosgi') return '输入';
                 return "Body ("+(this.item.bodyInfo.type==0?this.bodySave.length:"Raw")+")";
             },
             param:function () {

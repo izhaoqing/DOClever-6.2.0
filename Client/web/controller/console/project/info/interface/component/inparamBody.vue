@@ -1,7 +1,7 @@
 <template>
     <el-row class="row">
-        <el-row class="row" style="padding:0 0 0 20px;height: 50px;line-height: 50px;white-space: nowrap">
-            <el-radio v-if="callType === 'common'" class="radio" :label="0" v-model="info.type" :checked="info.type==0" id="bodyKey">Key-Value</el-radio>&nbsp;&nbsp;
+        <el-row v-if="callType === 'common'" class="row" style="padding:0 0 0 20px;height: 50px;line-height: 50px;white-space: nowrap">
+            <el-radio class="radio" :label="0" v-model="info.type" :checked="info.type==0" id="bodyKey">Key-Value</el-radio>&nbsp;&nbsp;
             <el-radio class="radio" :label="1" v-model="info.type" :checked="info.type==1" id="bodyRaw">Raw</el-radio>&nbsp;&nbsp;&nbsp;&nbsp;
             <el-select size="small" v-model="rawType" v-if="info.type==1" style="width: 180px">
                 <el-option value="" label="Text"></el-option>
@@ -117,6 +117,13 @@
                         })
                     }
                 }
+            },
+            item:function (v) {
+                if (this.callType === 'eosgi') {
+                    Vue.set(this.info, 'type', 1);
+                    Vue.set(this.info, 'rawType', 2);
+                }
+                console.log(this.info)
             }
         },
         computed:{
@@ -124,10 +131,13 @@
                 return this.item.body
             },
             info:function () {
-                return this.item.bodyInfo
+                let info = this.item.bodyInfo;
+                info.type = 1;
+                return info;
             },
             rawJSONType:{
                 get:function () {
+                    if (this.callType === 'eosgi') return 0;
                     return this.info.rawJSONType
                 },
                 set:function (val) {
@@ -144,6 +154,7 @@
             },
             rawType:{
                 get:function () {
+                    if (this.callType === 'eosgi') return 'application/json';
                     var type="";
                     this.item.header.forEach(function (obj) {
                         if(obj.name.toLowerCase()=="content-type")
@@ -317,8 +328,10 @@
         },
         created:function () {
             if (this.callType === 'eosgi') {
-                Vue.set(this.info, 'type', 1)
+                Vue.set(this.info, 'type', 1);
+                Vue.set(this.info, 'rawType', 2);
             }
+            console.log(this.item);
         }
     }
 </script>

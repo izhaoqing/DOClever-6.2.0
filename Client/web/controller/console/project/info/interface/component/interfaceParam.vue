@@ -14,7 +14,7 @@
             <inparamheader :index="index" :item="item"></inparamheader>
             <el-button size="mini" type="primary" style="margin-top: 5px;margin-left: 10px" @click="importHeader">导入HTTP Header字符串</el-button>
         </expand>
-        <expand v-if="interfaceEdit.method=='POST' || interfaceEdit.method=='PUT' || interfaceEdit.method=='PATCH' || interfaceEdit.callType === 'eosgi'" ref="body" :expand="bodyAutoExpand">
+        <expand v-if="interfaceEdit.method=='POST' || interfaceEdit.method=='PUT' || interfaceEdit.method=='PATCH'" ref="body" :expand="bodyAutoExpand">
             <div slot="title">{{bodyTab}}</div>
             <inparambody :index="index" :item="item" :callType="interfaceEdit.callType"></inparambody>
             <el-button size="mini" type="primary" style="margin-top: 5px;margin-left: 10px" @click="importBody" v-if="bodyInfo.type==0">导入Body字符串</el-button>
@@ -96,6 +96,8 @@
         watch:{
             "interfaceEdit.method":{
                 handler:function (val) {
+                    console.log("interfaceEdit.method");
+                    console.log(val);
                     if(val=="POST" || val=="PUT" || val=="PATCH")
                     {
                         this.bodyAutoExpand=1

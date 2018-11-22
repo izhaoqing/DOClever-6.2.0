@@ -106,6 +106,8 @@
         },
         computed:{
             arr:function () {
+                console.log(this.source);
+                console.log(this.data.bodyInfo.rawJSON);
                 return this.source?this.source:this.data.bodyInfo.rawJSON
             },
             type:function () {

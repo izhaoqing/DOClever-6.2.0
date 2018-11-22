@@ -26,7 +26,7 @@
                 </span>
             </el-row>
             <el-row class="row" style="height: 40px;line-height: 40px;padding-left: 10px;padding-right: 10px">
-                <el-col class="col" :span="5">
+                <el-col v-if="interfaceEdit.callType === 'common'" class="col" :span="5">
                     <el-select size="small" v-model="interface.method" @input="changeMethod" id="method" style="width: 90%">
                         <el-option  value="GET" label="GET"></el-option>
                         <el-option  value="POST" label="POST"></el-option>
@@ -35,7 +35,7 @@
                         <el-option  value="PATCH" label="PATCH"></el-option>
                     </el-select>
                 </el-col>
-                <el-col class="col" :span="8">
+                <el-col class="col" :span="interfaceEdit.callType === 'common' ? 8 : 13">
                     <el-autocomplete size="small" style="width: 95%" class="inline-input" v-model="baseUrl" :fetch-suggestions="querySearch" placeholder="选择或者填入你的BaseUrl" @input="changeBaseUrl" popper-class="my-autocomplete">
                         <i class="el-icon-caret-bottom el-input__icon" slot="suffix" @click="showAutoComplete"></i>
                         <template slot-scope="props">
@@ -44,8 +44,11 @@
                         </template>
                     </el-autocomplete>
                 </el-col>
-                <el-col class="col" :span="11">
+                <el-col v-if="interfaceEdit.callType === 'common'" class="col" :span="11">
                     <el-input size="small" style="width: 100%" placeholder="请填入你请求的路由地址" v-model="interface.url" @input="changeUrl" @paste.native="paste"></el-input>
+                </el-col>
+                <el-col v-else class="col" :span="11">
+                    <el-input size="small" style="width: 100%" placeholder="请填入方法名" v-model="interface.service"></el-input>
                 </el-col>
             </el-row>
             <div style="position: absolute;top: 105px;right: 10px;z-index: 1000;font-size: 14px" v-if="interface._id && !curParam.unSave">
@@ -73,7 +76,7 @@
                             </el-tooltip>
                             <span v-else>{{item.name}}</span>
                         </span>
-                        <runparam :index="index" :item="item" ref="runParam"></runparam>
+                        <runparam :index="index" :item="item" :callType="interfaceEdit.callType" ref="runParam"></runparam>
                     </el-tab-pane>
                 </template>
             </el-tabs>
@@ -96,6 +99,7 @@
                 runPending:false,
                 tabType:"query",
                 showDialog:false,
+                // serviceName:''
             }
         },
         mixins:[sessionChange],

@@ -401,7 +401,7 @@
                 }
             },
             "$store.state.interfaceEdit":function (val) {
-                this.interfaceEdit = val
+                if (this.interfaceEdit.callType === 'eosgi') Vue.set(this.interfaceEdit, 'methods', 'POST');
             }
         },
         methods: {

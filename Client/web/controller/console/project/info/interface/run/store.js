@@ -367,6 +367,7 @@ module.exports={
             if(val)
             {
                 var arrParam=[];
+                console.log(val);
                 var arr=val.match(/\{([^\s|\}|\{]+?)\}(?!\})/g);
                 if(arr)
                 {
