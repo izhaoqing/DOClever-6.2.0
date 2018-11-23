@@ -39,8 +39,8 @@
                     <el-autocomplete size="small" style="width: 95%" class="inline-input" v-model="baseUrl" :fetch-suggestions="querySearch" placeholder="选择或者填入你的BaseUrl" @input="changeBaseUrl" popper-class="my-autocomplete">
                         <i class="el-icon-caret-bottom el-input__icon" slot="suffix" @click="showAutoComplete"></i>
                         <template slot-scope="props">
-                            <div class="value">{{ props.item.value }}</div>
-                            <span class="remark">{{ props.item.remark }}</span>
+                            <div v-if="props.item.callType === interfaceEdit.callType" class="value">{{ props.item.value }}</div>
+                            <span v-if="props.item.callType === interfaceEdit.callType" class="remark">{{ props.item.remark }}</span>
                         </template>
                     </el-autocomplete>
                 </el-col>
@@ -157,17 +157,32 @@
             run:function () {
                 var _this=this;
                 this.runPending=true;
-                store.dispatch("run").then(function (data) {
-                    _this.runPending=false;
-                    if(data.code==200)
-                    {
-                        _this.$refs.runParam[parseInt(_this.tabIndex)].resultType=1;
-                    }
-                    else
-                    {
-                        $.notify(data.msg,0);
-                    }
-                })
+                if (this.interfaceEdit.callType === 'eosgi') {
+                    store.dispatch("runEosgi").then(function (data) {
+                        _this.runPending=false;
+                        if(data.code==200)
+                        {
+                            _this.$refs.runParam[parseInt(_this.tabIndex)].resultType=1;
+                        }
+                        else
+                        {
+                            $.notify(data.msg,0);
+                        }
+                    });
+                }
+                else { 
+                    store.dispatch("run").then(function (data) {
+                        _this.runPending=false;
+                        if(data.code==200)
+                        {
+                            _this.$refs.runParam[parseInt(_this.tabIndex)].resultType=1;
+                        }
+                        else
+                        {
+                            $.notify(data.msg,0);
+                        }
+                    });
+                }
             },
             save:function () {
                 var _this=this;
@@ -257,6 +272,7 @@
                 var results=this.baseUrls.map(function (obj) {
                     return {
                         value:obj.url,
+                        callType: obj.callType,
                         remark:obj.remark
                     }
                 })

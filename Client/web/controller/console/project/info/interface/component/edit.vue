@@ -400,8 +400,11 @@
                     }
                 }
             },
-            "$store.state.interfaceEdit":function (val) {
-                if (this.interfaceEdit.callType === 'eosgi') Vue.set(this.interfaceEdit, 'methods', 'POST');
+            "$store.state.interfaceEdit":{
+                handler: function (val) {
+                    if (this.interfaceEdit.callType === 'eosgi') Vue.set(this.interfaceEdit, 'method', 'POST');
+                },
+                immediate: true
             }
         },
         methods: {
@@ -857,6 +860,10 @@
         created:function () {
             var _this=this;
             this.$store.getters.event.$on("initInterface",this.initInterface)
+            // if (this.interfaceEdit.callType === 'eosgi') {
+            //     this.interfaceEdit.methods = 'POST';
+            //     this.$store.commit("changeMethod");
+            // }
         },
         beforeDestroy:function () {
             this.$store.getters.event.$off("initInterface",this.initInterface)

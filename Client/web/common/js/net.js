@@ -2,7 +2,8 @@
  * Created by sunxin on 2017/2/20.
  */
 var config=require("./config");
-var resource=require("vue-resource")
+var resource=require("vue-resource");
+var jQuery=require('jquery');
 Vue.use(resource)
 var net={};
 function getAllHeaders(obj) {
@@ -326,7 +327,7 @@ net.delete=function (path,params,headers,beforeFunc) {
     })
 }
 
-net.upload=function (method,path,data,headers,beforeFunc,run,bNet) {
+net.upload=function (method,path,data,headers,beforeFunc,run,bNet,service,callType) {
     if(!run)
     {
         headers=handleVersionHeaders(headers);
@@ -453,87 +454,128 @@ net.upload=function (method,path,data,headers,beforeFunc,run,bNet) {
     else
     {
         return new Promise(function (resolve,reject) {
-            var xhr=new XMLHttpRequest();
-            xhr.withCredentials=true;
-            xhr.open(method,bNet?path:(config.baseUrl+path),true);
-            if(headers)
-            {
-                for(var key in headers)
-                {
-                    xhr.setRequestHeader(key,headers[key]);
-                }
-            }
-            xhr.onreadystatechange=function () {
-                if(xhr.readyState == 4) {
-                    var resObj;
-                    if(xhr.responseType=="string" || xhr.responseType=="" || xhr.responseType=="json")
-                    {
-                        var strStr=xhr.responseText;
-                        try
-                        {
-                            resObj=JSON.parse(strStr);
-                        }
-                        catch (err)
-                        {
-                            resObj=strStr;
-                        }
-                    }
-                    else
-                    {
-                        if((xhr.responseType=="blob" || xhr.responseType=="arraybuffer" || xhr.responseType=="document") &&  xhr.response.size<=1024*5)
-                        {
-                            var reader = new FileReader();
-                            reader.onload = function(){
-                                var content = reader.result;
-                                if(/application\/xml/i.test(xhr.getResponseHeader("content-type")) || /text\/xml/i.test(xhr.getResponseHeader("content-type")))
-                                {
-                                    resObj=content;
-                                }
-                                else
-                                {
-                                    try
-                                    {
-                                        resObj=JSON.parse(content);
-                                    }
-                                    catch (err)
-                                    {
-                                        resObj=xhr.response;
-                                    }
-                                }
-                                var obj={
-                                    data:resObj,
-                                    status:xhr.status,
-                                    header:convertHeader(xhr.getAllResponseHeaders()),
-                                }
-                                resolve(obj);
-                            };
-                            reader.onerror = function(event){
-                                resObj=xhr.response;
-                                var obj={
-                                    data:resObj,
-                                    status:xhr.status,
-                                    header:convertHeader(xhr.getAllResponseHeaders()),
-                                }
-                                resolve(obj);
-                            };
-                            reader.readAsText(xhr.response);
-                            return;
-                        }
-                        else
-                        {
-                            resObj=xhr.response;
-                        }
-                    }
+            form = {
+                _call: service,
+                _mode: "issue",
+                _params: data,
+                _version: "1.0.0"
+            };
+            jQuery.ajax({
+                url: headers['url-doclever'] + headers['path-doclever'],
+                type: 'post',
+                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+                dataType: 'json',
+                timeout: '30000',
+                data: form,
+                crossDomain: true,
+                success: function (data, code, xhr) {
+                    console.log(arguments);
+                    console.log(data);
                     var obj={
-                        data:resObj,
+                        data:data,
                         status:xhr.status,
                         header:convertHeader(xhr.getAllResponseHeaders()),
                     }
                     resolve(obj)
-                    return;
+                },
+                error: function (error) {
+                    console.log(error);
                 }
-            }
-            xhr.send(form);
+            });
+
+            // var xhr=new XMLHttpRequest();
+            // xhr.withCredentials=true;
+            // if (callType === 'eosgi') {
+            //     xhr.open('POST',headers['url-doclever'] + headers['path-doclever'],true);
+            //     form = {
+            //         _call: service,
+            //         _mode: "issue",
+            //         _params: '{"pageSize":10,"pageIndex":1,"isAll":1,"qryCode":"","loginToken":"DF38E47E8DEE58EC5A47DDCF19F8598E","companyCode":"800","appId":5,"spId":1}',
+            //         _version: "1.0.0"
+            //     };
+            //     form = JSON.stringify(form);
+            // } else {
+            //     xhr.open(method,bNet?path:(config.baseUrl+path),true);
+            // }
+            // // if(headers)
+            // // {
+            // //     for(var key in headers)
+            // //     {
+            // //         xhr.setRequestHeader(key,headers[key]);
+            // //     }
+            // // }
+            // xhr.setRequestHeader('contentType', 'application/x-www-form-urlencoded; charset=utf-8');
+            // xhr.onreadystatechange=function () {
+            //     if(xhr.readyState == 4) {
+            //         var resObj;
+            //         if(xhr.responseType=="string" || xhr.responseType=="" || xhr.responseType=="json")
+            //         {
+            //             var strStr=xhr.responseText;
+            //             try
+            //             {
+            //                 resObj=JSON.parse(strStr);
+            //             }
+            //             catch (err)
+            //             {
+            //                 resObj=strStr;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             if((xhr.responseType=="blob" || xhr.responseType=="arraybuffer" || xhr.responseType=="document") &&  xhr.response.size<=1024*5)
+            //             {
+            //                 var reader = new FileReader();
+            //                 reader.onload = function(){
+            //                     var content = reader.result;
+            //                     if(/application\/xml/i.test(xhr.getResponseHeader("content-type")) || /text\/xml/i.test(xhr.getResponseHeader("content-type")))
+            //                     {
+            //                         resObj=content;
+            //                     }
+            //                     else
+            //                     {
+            //                         try
+            //                         {
+            //                             resObj=JSON.parse(content);
+            //                         }
+            //                         catch (err)
+            //                         {
+            //                             resObj=xhr.response;
+            //                         }
+            //                     }
+            //                     var obj={
+            //                         data:resObj,
+            //                         status:xhr.status,
+            //                         header:convertHeader(xhr.getAllResponseHeaders()),
+            //                     }
+            //                     resolve(obj);
+            //                 };
+            //                 reader.onerror = function(event){
+            //                     resObj=xhr.response;
+            //                     var obj={
+            //                         data:resObj,
+            //                         status:xhr.status,
+            //                         header:convertHeader(xhr.getAllResponseHeaders()),
+            //                     }
+            //                     resolve(obj);
+            //                 };
+            //                 reader.readAsText(xhr.response);
+            //                 return;
+            //             }
+            //             else
+            //             {
+            //                 resObj=xhr.response;
+            //             }
+            //         }
+            //         var obj={
+            //             data:resObj,
+            //             status:xhr.status,
+            //             header:convertHeader(xhr.getAllResponseHeaders()),
+            //         }
+            //         resolve(obj)
+            //         return;
+            //     }
+            // }
+            // xhr.send(form);
         })
     }
 

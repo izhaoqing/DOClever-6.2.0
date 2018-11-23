@@ -1,6 +1,6 @@
 <template>
     <el-row class="row">
-        <el-row class="row" style="padding:0 0 0 20px;height: 50px;line-height: 50px;white-space: nowrap">
+        <el-row v-if="callType === 'common'" class="row" style="padding:0 0 0 20px;height: 50px;line-height: 50px;white-space: nowrap">
             <el-radio class="radio" :label="0" v-model="info.type" id="bodyKey">
                 Key-Value
             </el-radio>
@@ -118,7 +118,7 @@
 <script>
     var runBodyJSON=require("./runBodyJSON.vue");
     module.exports={
-        props:["index","item"],
+        props:["index","item","callType"],
         data:function () {
             return {
                 salt:"",
@@ -152,6 +152,13 @@
                         })
                     }
                 }
+            },
+            item:function (v) {
+                if (this.callType === 'eosgi') {
+                    Vue.set(this.info, 'type', 1);
+                    Vue.set(this.info, 'rawType', 2);
+                }
+                console.log(this.info)
             }
         },
         computed:{
@@ -166,6 +173,7 @@
             },
             rawJSONType:{
                 get:function () {
+                    if (this.callType === 'eosgi') return 0;
                     return this.info.rawJSONType
                 },
                 set:function (val) {
@@ -190,6 +198,7 @@
             },
             rawType:{
                 get:function () {
+                    if (this.callType === 'eosgi') return 'application/json';
                     var type="";
                     this.item.header.forEach(function (obj) {
                         if(obj.name.toLowerCase()=="content-type")
@@ -436,6 +445,13 @@
                     _this.info.rawJSONType=(obj instanceof Array)?1:0;
                 }
             }
+        },
+        created:function () {
+            if (this.callType === 'eosgi') {
+                Vue.set(this.info, 'type', 1);
+                Vue.set(this.info, 'rawType', 2);
+            }
+            console.log(this.item);
         }
     }
 </script>

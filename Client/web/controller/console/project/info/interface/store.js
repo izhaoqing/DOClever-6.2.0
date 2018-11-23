@@ -523,7 +523,7 @@ module.exports={
                                 data:item.value.map(function (obj) {
                                     return {
                                         value:obj,
-                                        remark:""
+                                        remark:"",
                                     }
                                 })
                             }

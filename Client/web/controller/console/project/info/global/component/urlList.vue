@@ -8,8 +8,8 @@
                     </td>
                     <td style="width: 20%">
                         <el-select style="width: 90%;text-align: center" v-model="item.callType" size="small">
-                            <el-option  :value="0" label="eosgi"></el-option>
-                            <el-option  :value="1" label="常规"></el-option>
+                            <el-option  :value="'eosgi'" label="eosgi"></el-option>
+                            <el-option  :value="'common'" label="常规"></el-option>
                         </el-select>
                     </td>
                     <td style="width: 20%">

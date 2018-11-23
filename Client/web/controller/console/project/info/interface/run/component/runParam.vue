@@ -17,9 +17,9 @@
                 <el-input size="small" type="textarea" :rows="3" style="height: 100px;margin-top: 10px" placeholder="在这里编辑原始的header字符串，以回车分割" v-show="headerRawShow" v-model="headerRawStr"></el-input>
                 <el-button type="primary" size="mini" style="margin-top: 5px;margin-left: 10px" @click="toggleHeader">{{headerRawShow?'Commit Raw':'Edit Raw'}}</el-button>
             </expand>
-            <expand v-if="interface.method=='POST' || interface.method=='PUT' || interface.method=='PATCH' || callType === 'eosgi'" ref="body" :expand="bodyAutoExpand">
+            <expand v-if="interface.method=='POST' || interface.method=='PUT' || interface.method=='PATCH'" ref="body" :expand="bodyAutoExpand">
                 <div slot="title">{{bodyTab}}</div>
-                <runbody v-show="!bodyRawShow" :index="index" :item="item"></runbody>
+                <runbody v-show="!bodyRawShow" :index="index" :item="item" :callType="callType"></runbody>
                 <el-input size="small" type="textarea" :rows="3" style="height: 100px;margin-top: 10px" placeholder="在这里编辑原始的url参数字符串，以&符合分割，文件类型用[FILE]代替" v-show="bodyRawShow" v-model="bodyRawStr"></el-input>
                 <el-button type="primary" size="mini" style="margin-top: 5px;margin-left: 10px" @click="toggleBody" v-if="bodyInfo.type==0">{{bodyRawShow?'Commit Raw':'Edit Raw'}}</el-button>
             </expand>

@@ -409,6 +409,8 @@ module.exports={
     },
     actions:{
         run:function (context) {
+            console.log('run');
+            console.log(context.state);
             var method=context.state.interface.method;
             var baseUrl=$.trim(context.state.baseUrl);
             var path=$.trim(context.state.interface.url);
@@ -757,6 +759,357 @@ module.exports={
                 }
             })
         },
+        runEosgi:function (context) {
+            var method=context.state.interface.method;
+            var baseUrl=$.trim(context.state.baseUrl);
+            var service = context.state.interface.service;
+            // var path=$.trim(context.state.interface.url);
+            var path = '/common/service.execute.json';
+            var globalVar={};
+            // context.state.baseUrls.forEach(function (obj) {
+            //     if(obj.url==baseUrl && obj.env)
+            //     {
+            //         obj.env.forEach(function (obj) {
+            //             globalVar[obj.key]=obj.value;
+            //         })
+            //     }
+            // })
+            if(!method || !baseUrl || !path)
+            {
+                return new Promise(function (resolve,reject) {
+                    var obj={};
+                    obj.code=0;
+                    obj.msg="url和服务名不能为空!"
+                    resolve(obj)
+                });
+            }
+            var bMock=false;
+            if(baseUrl!="MockServer")
+            {
+                var indexHttp=baseUrl.indexOf("://"),indexSlash;
+                if(indexHttp==-1)
+                {
+                    indexSlash=baseUrl.indexOf("/")
+                }
+                else
+                {
+                    indexSlash=baseUrl.indexOf("/",indexHttp+3);
+                }
+                if(indexSlash>-1)
+                {
+                    var baseUrlTemp=baseUrl.substring(0,indexSlash);
+                    var pathTemp=baseUrl.substr(indexSlash);
+                    if(pathTemp[pathTemp.length-1]=="/" && path[0]=="/")
+                    {
+                        pathTemp=pathTemp.substr(0,pathTemp.length-1);
+                    }
+                    else if(pathTemp[pathTemp.length-1]!="/" && path[0]!="/" && pathTemp.indexOf("?")==-1 && pathTemp.indexOf("#")==-1)
+                    {
+                        pathTemp+="/"
+                    }
+                    baseUrl=baseUrlTemp;
+                    path=pathTemp+path;
+                }
+                else
+                {
+                    if(path[0]!="/")
+                    {
+                        path="/"+path;
+                    }
+                }
+            }
+            else
+            {
+                bMock=true;
+                baseUrl=config.baseUrl;
+                path="/mock/"+session.get("projectId")+(session.get("versionId")?session.get("versionId"):"")+(path[0]!="/"?("/"+path):path);
+            }
+            path=helper.handleGlobalVar(path,globalVar);
+            if(path.substr(0,2)=="//")
+            {
+                path=path.substr(1);
+            }
+            var param={};
+            context.getters.param.forEach(function (obj) {
+                param[obj.name]=helper.handleGlobalVar(obj.selValue,globalVar);
+            })
+            var query={};
+            context.getters.querySave.forEach(function (obj) {
+                if(obj.encrypt && obj.encrypt.type)
+                {
+                    var value=helper.encrypt(obj.encrypt.type,helper.handleGlobalVar(obj.selValue,globalVar),obj.encrypt.salt);
+                    var key=obj.name;
+                    if(obj.encrypt.key)
+                    {
+                        key=helper.encrypt(obj.encrypt.type,key,obj.encrypt.salt);
+                    }
+                    query[key]=value;
+                }
+                else
+                {
+                    query[obj.name]=helper.handleGlobalVar(obj.selValue,globalVar);
+                }
+
+            })
+            var header={},arrHeaders=["host","connection","origin","referer","user-agent","cookie"],objHeaders={};
+            context.getters.headerSave.forEach(function (obj) {
+                if(obj.encrypt && obj.encrypt.type)
+                {
+                    var value=helper.encrypt(obj.encrypt.type,helper.handleGlobalVar(obj.value,globalVar),obj.encrypt.salt);
+                    var key=obj.name;
+                    if($.inArr(key,arrHeaders))
+                    {
+                        objHeaders[key]=value;
+                    }
+                    else
+                    {
+                        header[key]=value;
+                    }
+
+                }
+                else
+                {
+                    if($.inArr(obj.name,arrHeaders))
+                    {
+                        objHeaders[obj.name]=helper.handleGlobalVar(obj.value,globalVar);
+                    }
+                    else
+                    {
+                        header[obj.name]=helper.handleGlobalVar(obj.value,globalVar);
+                    }
+
+                }
+            })
+            var body={},bUpload=false;
+            if(method=="POST" || method=="PUT" || method=="PATCH")
+            {
+                if(context.getters.curParam.bodyInfo.type==0)
+                {
+                    var arr=document.getElementById("bodyTable").querySelectorAll("[custom]");
+                    context.getters.bodySave.forEach(function (obj,index) {
+                        if(obj.type==0)
+                        {
+                            if(obj.encrypt && obj.encrypt.type)
+                            {
+                                var value=helper.encrypt(obj.encrypt.type,helper.handleGlobalVar(obj.selValue,globalVar),obj.encrypt.salt);
+                                var key=obj.name;
+                                if(obj.encrypt.key)
+                                {
+                                    key=helper.encrypt(obj.encrypt.type,key,obj.encrypt.salt);
+                                }
+                                body[key]=value;
+                            }
+                            else
+                            {
+                                body[obj.name]=helper.handleGlobalVar(obj.selValue,globalVar);
+                            }
+                        }
+                        else if(obj.type==1)
+                        {
+                            if(arr[index].files.length>0)
+                            {
+                                if(obj.encrypt && obj.encrypt.type && obj.encrypt.key)
+                                {
+                                    var key=helper.encrypt(obj.encrypt.type,obj.name,obj.encrypt.salt);
+                                    body[key]=arr[index].files[0];
+                                }
+                                else
+                                {
+                                    body[obj.name]=arr[index].files[0];
+                                }
+                                bUpload=true;
+                            }
+                            else
+                            {
+                                if(obj.encrypt && obj.encrypt.type && obj.encrypt.key)
+                                {
+                                    var key=helper.encrypt(obj.encrypt.type,obj.name,obj.encrypt.salt);
+                                    body[key]="";
+                                }
+                                else
+                                {
+                                    body[obj.name]="";
+                                }
+
+                            }
+                        }
+                    })
+                }
+                else
+                {
+                    if(context.getters.curParam.bodyInfo.rawType==0)
+                    {
+                        var encryptType=context.getters.curParam.encryptType;
+                        if(encryptType)
+                        {
+                            body=helper.encrypt(encryptType,helper.handleGlobalVar(context.getters.curParam.bodyInfo.rawText,globalVar),document.getElementById("bodyRawEncryptSalt").querySelector("input").value)
+                        }
+                        else
+                        {
+                            body=helper.handleGlobalVar(context.getters.curParam.bodyInfo.rawText,globalVar);
+                        }
+                    }
+                    else if(context.getters.curParam.bodyInfo.rawType==2)
+                    {
+                        var obj=context.getters.curParam.bodyInfo.rawJSONType==0?{}:[];
+                        var result=helper.resultSave(context.getters.curParam.bodyInfo.rawJSON,0,globalVar);
+                        helper.convertToJSON(result,obj,null,1);
+                        body=obj;
+                    }
+                    else
+                    {
+                        if(!context.getters.curParam.fileResult)
+                        {
+                            return new Promise(function (resolve,reject) {
+                                var obj={};
+                                obj.code=0;
+                                obj.msg="上传内容不能为空！";
+                                resolve(obj)
+                            });
+                        }
+                        body=context.getters.curParam.fileResult;
+                    }
+                }
+            }
+
+            if(context.getters.curParam.before.mode==0)
+            {
+                if(context.state.before)
+                {
+                    helper.runBefore(context.state.before,baseUrl,path,method,query,header,body,param)
+                }
+                helper.runBefore(context.getters.curParam.before.code,baseUrl,path,method,query,header,body,param)
+            }
+            else
+            {
+                helper.runBefore(context.getters.curParam.before.code,baseUrl,path,method,query,header,body,param)
+            }
+            for(var paramKey in param)
+            {
+                path=path.replace("{"+paramKey+"}",param[paramKey])
+            }
+            if((method=="POST" || method=="PUT" || method=="PATCH") && context.getters.curParam.bodyInfo.type==1 && context.getters.curParam.bodyInfo.rawType==2)
+            {
+                body=JSON.stringify(body);
+            }
+            query=$.param(query);
+            if(query.length>0)
+            {
+                path=path+"?"+query;
+            }
+            header["url-doclever"]=baseUrl;
+            header["path-doclever"]=path;
+            header["method-doclever"]=method;
+            header["user-doclever"]=session.get("id");
+            header["headers-doclever"]=JSON.stringify(objHeaders);
+            var proxyUrl="/proxy";
+            var bNet=false;
+            if(!bMock && session.get("proxy"))
+            {
+                bNet=true;
+                proxyUrl="http://127.0.0.1:36742";
+            }
+            var startDate=new Date();
+            var bContent=false,contentKey;
+            for(var key in header)
+            {
+                if(key.toLowerCase()=="content-type")
+                {
+                    bContent=true;
+                    contentKey=key;
+                    if(/multipart\/form-data/i.test(header[contentKey]))
+                    {
+                        bUpload=true;
+                    }
+                    break
+                }
+            }
+            context.getters.curParam.resultData="";
+            var func;
+            if(bUpload || context.getters.curParam.bodyInfo.type==1)
+            {
+                if(bContent && context.getters.curParam.bodyInfo.type==0)
+                {
+                    delete header[contentKey];
+                }
+                func=net.upload("POST",proxyUrl,body,header,null,1,bNet,service,'eosgi')
+            }
+            else
+            {
+                func=net.post(proxyUrl,body,header,null,1,bNet)
+            }
+            return func.then(function (result) {
+                context.getters.curParam.run=1;
+                context.getters.curParam.reqHeader=result.header["doclever-request"]?JSON.parse(result.header["doclever-request"]):{};
+                delete result.header["doclever-request"];
+                context.getters.curParam.resHeader=result.header;
+                context.getters.curParam.status=String(result.status);
+                context.getters.curParam.second=(((new Date())-startDate)/1000).toFixed(3);
+                context.getters.curParam.type=typeof (result.data);
+                if(context.getters.curParam.after.mode==0)
+                {
+                    if(context.state.after)
+                    {
+                        helper.runAfter(context.state.after,result.status,result.header,result.data)
+                    }
+                    helper.runAfter(context.getters.curParam.after.code,result.status,result.header,result.data)
+                }
+                else
+                {
+                    helper.runAfter(context.getters.curParam.after.code,result.status,result.header,result.data)
+                }
+                if(context.getters.curParam.type=="object" && !(result.data instanceof Blob))
+                {
+                    context.getters.curParam.type="object"
+                    context.getters.curParam.resultData=result.data;
+                    context.getters.curParam.rawData=JSON.stringify(result.data);
+                    var outParam=helper.resultSave(context.getters.curParam.result)
+                    context.getters.curParam.draw=helper.format(context.getters.curParam.rawData,0,outParam,context.state.status).draw;
+                    var obj=helper.format(context.getters.curParam.rawData,1,outParam,context.state.status);
+                    context.getters.curParam.drawMix=obj.draw
+                    context.getters.curParam.errorCount=obj.error;
+                }
+                else if(result.header["content-type"] && result.header["content-type"].indexOf("image/")>-1)
+                {
+                    if(context.getters.curParam.imgUrl)
+                    {
+                        $.revokeUrlObject(context.getters.curParam.imgUrl);
+                        context.getters.curParam.imgUrl=""
+                    }
+                    context.getters.curParam.type="img";
+                    context.getters.curParam.rawData="";
+                    context.getters.curParam.imgUrl=$.createUrlObject(result.data);
+                    context.getters.curParam.errorCount=0;
+                }
+                else if(result.header["content-type"] && result.header["content-type"].indexOf("/html")>-1)
+                {
+                    context.getters.curParam.type="html";
+                    context.getters.curParam.rawData=result.data;
+                    context.getters.curParam.draw=result.data
+                    context.getters.curParam.drawMix=result.data;
+                    context.getters.curParam.errorCount=0;
+                }
+                else
+                {
+                    if(result.header["content-type"]===undefined || (result.header["content-type"] && result.header["content-type"].indexOf("/xml")==-1))
+                    {
+                        var ele=document.createElement("div");
+                        ele.innerHTML=result.data;
+                        if(ele.childNodes.length>1 || (ele.childNodes.length>0 && ele.childNodes[0].nodeType==1))
+                        {
+                            context.getters.curParam.type="html";
+                        }
+                    }
+                    context.getters.curParam.rawData=result.data;
+                    context.getters.curParam.draw=result.data
+                    context.getters.curParam.drawMix=result.data;
+                    context.getters.curParam.errorCount=0;
+                }
+                return {
+                    code:200
+                }
+            })
+        },
         save:function (context) {
             if(context.getters.curParam.imgUrl)
             {
@@ -766,12 +1119,19 @@ module.exports={
             var method=context.state.interface.method;
             var baseUrl=$.trim(context.state.baseUrl);
             var path=$.trim(context.state.interface.url);
+            var service, callType;
+            if (context.state.interface.callType === 'eosgi') {
+                path = '/common/service.execute.json';
+                service = $.trim(context.state.interface.service);
+                // callType = $.trim(context.state.interface.callType);
+            }
+            callType = $.trim(context.state.interface.callType);
             if(!method || !baseUrl || !path)
             {
                 return new Promise(function (resolve,reject) {
                     var obj={};
                     obj.code=0;
-                    obj.msg="方法，url和路由地址不能为空!"
+                    obj.msg=context.state.interface.callType === 'eosgi' ? '方法，url和服务名不能为空!' : '方法，url和路由地址不能为空!';
                     resolve(obj)
                 });
             }
@@ -945,8 +1305,10 @@ module.exports={
                 createdAt:!context.state.interface._id?"":context.state.interface.createdAt,
                 updatedAt:!context.state.interface._id?"":context.state.interface.updatedAt,
                 finish:context.state.interface.finish,
+                service,
                 param:arrParam
             }
+            if (callType) obj.callType = callType;
             context.commit("project/info/interface/setNewInterfaceStr",JSON.stringify(obj),{
                 root:true
             })
