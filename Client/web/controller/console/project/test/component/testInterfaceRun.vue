@@ -80,19 +80,19 @@
                     </span>
                     <el-row class="row">
                         <el-tabs type="card">
-                            <el-tab-pane :label="paramTab" v-if="param.length>0">
+                            <el-tab-pane :label="paramTab" v-if="param.length>0 && objInterface.callType !=='eosgi'">
                                 <testrestparam :interface="item" :status="status"></testrestparam>
                             </el-tab-pane>
-                            <el-tab-pane :label="queryTab">
+                            <el-tab-pane :label="queryTab" v-if="objInterface.callType !=='eosgi'">
                                 <testquery :interface="item" :status="status"></testquery>
                             </el-tab-pane>
-                            <el-tab-pane :label="headerTab">
+                            <el-tab-pane :label="headerTab" v-if="objInterface.callType !=='eosgi'">
                                 <testheader :interface="item"></testheader>
                             </el-tab-pane>
                             <el-tab-pane :label="bodyTab" v-if="objInterface.method=='POST' || objInterface.method=='PUT' || objInterface.method=='PATCH'">
-                                <testbody :interface="item" :status="status"></testbody>
+                                <testbody :interface="item" :status="status" :callType="objInterface.callType"></testbody>
                             </el-tab-pane>
-                            <el-tab-pane label="Inject">
+                            <el-tab-pane label="Inject" v-if="objInterface.callType !=='eosgi'">
                                 <testinject :interface="item"></testinject>
                             </el-tab-pane>
                         </el-tabs>

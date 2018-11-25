@@ -57,7 +57,7 @@
 <script>
     module.exports={
         name:"testparambodyjson",
-        props:["source","le","status"],
+        props:["source","le","status","interface"],
         data:function () {
             return {
                 level:this.le?this.le:0,

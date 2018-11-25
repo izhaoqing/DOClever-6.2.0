@@ -2310,7 +2310,15 @@ helper.runTest=async function (obj,global,test,root,opt,id) {
         {
             delete header[contentKey];
         }
-        func=net.upload("POST",proxyUrl,body,header,null,1,bNet)
+        if (obj.callType === 'eosgi') {
+            let bodyObj = {};
+            obj.bodyInfo.rawJSON.forEach(item => {
+                bodyObj[item.name] = item.mock;
+            });
+            func=net.upload("POST",proxyUrl,JSON.stringify(bodyObj),header,null,1,bNet,obj.service,'eosgi');
+        } else {
+            func=net.upload("POST",proxyUrl,body,header,null,1,bNet);
+        }
     }
     else
     {

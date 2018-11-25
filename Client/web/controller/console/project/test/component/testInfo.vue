@@ -213,6 +213,7 @@
                 }
                 try
                 {
+                    debugger;
                     helper.runTestCode(str,this.test,{},{
                         baseUrl:this.$store.state.baseUrl,
                         env:env,

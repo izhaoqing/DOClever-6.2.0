@@ -1,7 +1,7 @@
 <template>
     <el-row class="row">
         <el-row class="row" style="padding:0 0 0 20px;height: 50px;line-height: 50px">
-            <el-radio class="radio" :label="0" v-model="info.type" id="bodyKey" :disabled="true">
+            <el-radio v-if="callType !== 'eosgi'" class="radio" :label="0" v-model="info.type" id="bodyKey" :disabled="true">
                 Key-Value
             </el-radio>
             <el-radio class="radio" :label="1" v-model="info.type" id="bodyRaw" :disabled="true">
@@ -60,7 +60,7 @@
             </template>
         </table>
         <el-row class="row" style="padding: 0 0 0 20px;" v-show="info.type==1 && info.rawType==2">
-            <testbodyjson :source="info.rawJSON" :status="status"></testbodyjson>
+            <testbodyjson :source="info.rawJSON" :status="status" :interface="interface"></testbodyjson>
         </el-row>
         <el-row class="row" style="padding: 0 0 0 20px;" v-show="info.type==1 && info.rawType!=2">
             <el-row class="row" style="height: 50px;line-height: 50px;margin: 0;padding: 0" v-if="info.rawType==0">
@@ -102,7 +102,7 @@
 <script>
     var testBodyJSON=require("./testBodyJSON.vue");
     module.exports={
-        props:["interface","status"],
+        props:["interface","status","callType"],
         data:function () {
             return {
                 itemSel:null,
@@ -123,6 +123,7 @@
             },
             rawType:{
                 get:function () {
+                    if (this.callType === 'eosgi') return 'application/json';
                     var type="";
                     this.interface.header.forEach(function (obj) {
                         if(obj.name.toLowerCase()=="content-type")
@@ -222,6 +223,13 @@
                     event.target.parentNode.parentNode.parentNode.querySelector("input").focus();
                 },100)
             },
+        },
+        created:function () {
+            if (this.callType === 'eosgi') {
+                Vue.set(this.info, 'type', 1);
+                Vue.set(this.info, 'rawType', 2);
+            }
+            console.log(this.item);
         }
     }
 </script>
