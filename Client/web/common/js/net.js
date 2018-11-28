@@ -460,7 +460,7 @@ net.upload=function (method,path,data,headers,beforeFunc,run,bNet,service,callTy
                 _params: data,
                 _version: "1.0.0"
             };
-            debugger;
+            // debugger;
             jQuery.ajax({
                 url: headers['url-doclever'] + headers['path-doclever'],
                 type: 'post',

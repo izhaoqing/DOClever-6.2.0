@@ -2,7 +2,7 @@
     <el-dialog title="编辑接口入参"  width="50%" ref="box" :visible.sync="showDialog" append-to-body>
         <el-row class="row">
             <el-tabs v-model="type">
-                <el-tab-pane name="param" label="Param">
+                <el-tab-pane v-if="callType !== 'eosgi'" name="param" label="Param">
                     <el-row class="row" v-for="(item,index) in param" style="text-align: center;height: 50px;line-height: 50px">
                         <el-col class="col" :span="6">
                             <el-input size="small" v-model="item.key" style="width: 90%" placeholder="请输入key">
@@ -26,7 +26,7 @@
                         </el-col>
                     </el-row>
                 </el-tab-pane>
-                <el-tab-pane name="query" label="Query">
+                <el-tab-pane v-if="callType !== 'eosgi'" name="query" label="Query">
                     <el-row class="row" v-for="(item,index) in query" style="text-align: center;height: 50px;line-height: 50px">
                         <el-col class="col" :span="6">
                             <el-input size="small" v-model="item.key" style="width: 90%" placeholder="请输入key">
@@ -50,7 +50,7 @@
                         </el-col>
                     </el-row>
                 </el-tab-pane>
-                <el-tab-pane name="header" label="Header">
+                <el-tab-pane v-if="callType !== 'eosgi'" name="header" label="Header">
                     <el-row class="row" v-for="(item,index) in header" style="text-align: center;height: 50px;line-height: 50px">
                         <el-col class="col" :span="6">
                             <el-input size="small" v-model="item.key" style="width: 90%" placeholder="请输入key">
@@ -116,11 +116,10 @@
 
 <script>
     module.exports = {
-        props:["argv","index"],
+        props:["argv","index","callType"],
         data: function () {
             return {
                 showDialog:false,
-                type:"param",
                 param:function (data) {
                     var arr=[];
                     for(var key in data)
@@ -200,6 +199,11 @@
                     }
                     return arr;
                 }.call(this,this.argv.body),
+            }
+        },
+        computed: {
+            type: function () {
+                return this.callType !== 'eosgi' ? "param" : 'body'
             }
         },
         methods: {

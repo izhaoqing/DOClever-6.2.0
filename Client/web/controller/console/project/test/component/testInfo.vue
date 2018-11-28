@@ -213,7 +213,6 @@
                 }
                 try
                 {
-                    debugger;
                     helper.runTestCode(str,this.test,{},{
                         baseUrl:this.$store.state.baseUrl,
                         env:env,
@@ -258,6 +257,7 @@
             },
             initTestContent:function (data) {
                 var type;
+                debugger;
                 this.$refs.code.initTestContent(data.code);
                 this.$refs.ui.initTestContent();
                 if(data.code)

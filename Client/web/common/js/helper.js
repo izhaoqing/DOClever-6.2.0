@@ -2029,6 +2029,11 @@ helper.runTest=async function (obj,global,test,root,opt,id) {
             {
                 var obj1=obj.bodyInfo.rawJSONType==0?{}:[];
                 var result=helper.resultSave(obj.bodyInfo.rawJSON,0,globalVar);
+                if (obj.callType === 'eosgi') {
+                    obj.bodyInfo.rawJSON.forEach(item => {
+                        if (opt.body[item.name] !== undefined) item.mock = opt.body[item.name];
+                    });
+                }
                 helper.convertToJSON(result,obj1,null,1);
                 body=obj1;
             }
@@ -2513,6 +2518,7 @@ helper.runTestCode=async function (code,test,global,opt,root,argv,mode,__id,leve
             opt.baseUrls=objInfo.baseUrls;
             opt.before=objInfo.before;
             opt.after=objInfo.after;
+            console.log(JSON.parse(obj));
             text="(function (opt1) {return helper.runTest("+obj.replace(/\r|\n/g,"")+",opt,test,root,opt1,"+(level==0?objId:undefined)+")})"
         }
         else if(type=="2")

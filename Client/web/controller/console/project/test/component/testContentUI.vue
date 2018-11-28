@@ -260,6 +260,7 @@
                         id:id,
                         name:example?(obj.name+"("+example+")"):obj.name,
                         data:JSON.stringify(obj),
+                        callType: obj.callType,
                         argv:{
                             param:{},
                             query:{},
@@ -610,10 +611,12 @@
                 this.lastEle=null;
             },
             editInterfaceArgv:function (item,index) {
-                $.showBox(this,require("./testUIInterfaceArgv.vue"),{
+                let obj = {
                     argv:item.argv,
                     index:index
-                })
+                };
+                if (item.callType) obj.callType = item.callType;
+                $.showBox(this,require("./testUIInterfaceArgv.vue"), obj)
             },
             editTestArgv:function (item,index) {
                 $.showBox(this,require("./testUITestArgv.vue"),{
