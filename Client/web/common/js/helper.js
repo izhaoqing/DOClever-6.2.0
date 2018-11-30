@@ -2282,7 +2282,7 @@ helper.runTest=async function (obj,global,test,root,opt,id) {
         }
     }
     header["url-doclever"]=baseUrl;
-    header["path-doclever"]=path;
+    header["path-doclever"]=obj.callType === 'eosgi' ? '/common/service.execute.json' : path;
     header["method-doclever"]=method;
     header["user-doclever"]=session.get("id");
     header["headers-doclever"]=JSON.stringify(objHeaders);

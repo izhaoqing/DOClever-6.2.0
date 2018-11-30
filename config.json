@@ -1,1 +1,5 @@
-{"db":"mongodb://localhost:27017","filePath":"/Users/Shared/DOClever","port":10000}
+{
+  "db": "mongodb://zq:ywsj2018@dds-bp1e4b072aa38c74-pub.mongodb.rds.aliyuncs.com:3717/doclever",
+  "filePath": "/Users/Shared/DOClever",
+  "port": 10000
+}

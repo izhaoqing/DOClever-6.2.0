@@ -257,7 +257,6 @@
             },
             initTestContent:function (data) {
                 var type;
-                debugger;
                 this.$refs.code.initTestContent(data.code);
                 this.$refs.ui.initTestContent();
                 if(data.code)

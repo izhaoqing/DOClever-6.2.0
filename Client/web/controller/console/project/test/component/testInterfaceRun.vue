@@ -26,7 +26,7 @@
                 <el-input size="small" style="width: 90%" placeholder="请填入名称" v-model="objInterface.name"></el-input>
             </el-col>
             <el-col class="col" :span="2">
-                路径
+                {{objInterface.callType === 'eosgi' ? '服务名' : '路径'}}
             </el-col>
             <el-col class="col" :span="10">
                 <el-input size="small" style="width: 90%" v-model="objInterface.url" :disabled="true"></el-input>
